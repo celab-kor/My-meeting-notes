@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co-founder 미팅 회의록 - 공정 AI 스타트업</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 8s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .meeting-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: linear-gradient(135deg, #f8faff 0%, #e8f1ff 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-item {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #2a5298;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #1e3c72;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2a5298;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '🔍';
+            font-size: 1.5rem;
+        }
+
+        .agenda-item {
+            background: linear-gradient(135deg, #f8faff 0%, #e8f1ff 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #2a5298;
+            transition: all 0.3s ease;
+        }
+
+        .agenda-item:hover {
+            background: linear-gradient(135deg, #e8f1ff 0%, #d8e8ff 100%);
+            transform: translateX(5px);
+        }
+
+        .agenda-title {
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .agenda-content {
+            color: #444;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .insight-item {
+            background: linear-gradient(135deg, #fff7e6 0%, #ffeaa7 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #fdcb6e;
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            transform: translateX(5px);
+        }
+
+        .insight-title {
+            font-weight: 700;
+            color: #b8860b;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .decision-item {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4caf50;
+            transition: all 0.3s ease;
+        }
+
+        .decision-item:hover {
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            transform: translateX(5px);
+        }
+
+        .action-item {
+            background: linear-gradient(135deg, #ffe8f0 0%, #ffc1cc 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e91e63;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-item:hover {
+            background: linear-gradient(135deg, #ffc1cc 0%, #ff9aa2 100%);
+            transform: translateX(5px);
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: end;
+            gap: 8px;
+        }
+
+        .priority {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .priority.high {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .priority.medium {
+            background: #feca57;
+            color: white;
+        }
+
+        .priority.low {
+            background: #48dbfb;
+            color: white;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding: 20px 0 20px 40px;
+            border-left: 3px solid #2a5298;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 25px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #2a5298;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #2a5298;
+        }
+
+        .timeline-date {
+            font-weight: 700;
+            color: #2a5298;
+            margin-bottom: 8px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 30px;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #2a5298;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .quote {
+            font-style: italic;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #4169e1;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+
+        .quote::before {
+            content: '"';
+            font-size: 3rem;
+            color: #4169e1;
+            opacity: 0.3;
+            float: left;
+            line-height: 1;
+            margin-right: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-progress {
+            background: #3498db;
+            color: white;
+        }
+
+        .status-complete {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .status-pending {
+            background: #f39c12;
+            color: white;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer-note {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .meeting-info {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .action-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .action-meta {
+                align-items: start;
+            }
+        }
+
+        .collapsible {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible:hover {
+            opacity: 0.8;
+        }
+
+        .collapsible::after {
+            content: ' ▼';
+            font-size: 0.8rem;
+            color: #666;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.collapsed::after {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 1000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Co-founder 미팅 회의록</h1>
+            <div class="header-subtitle">공정 AI 스타트업 전문가 인터뷰 및 파트너십 협의</div>
+        </div>
+
+        <div class="meeting-info">
+            <div class="info-item">
+                <div class="info-label">회의 제목</div>
+                <div class="info-value">Co-founder 미팅 For 공정 AI 스타트업</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">일시</div>
+                <div class="info-value">2025년 7월 21일 오전 2:00</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">장소</div>
+                <div class="info-value">온라인 미팅</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">참석자</div>
+                <div class="info-value">김상윤 대표, 박규호 부장</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">회의 목적</div>
+                <div class="info-value">Product Q&A, 전문가 인터뷰, Co-founder 계약조건 협의</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('technical-qa')">기술 Q&A</button>
+                <button class="nav-tab" onclick="showTab('partnership')">파트너십 협의</button>
+                <button class="nav-tab" onclick="showTab('decisions')">결정사항</button>
+                <button class="nav-tab" onclick="showTab('actions')">액션아이템</button>
+            </div>
+
+            <div id="technical-qa" class="tab-content active">
+                <div class="section">
+                    <h2 class="section-title">P&ID 리비전 및 마크업 프로세스</h2>
+                    
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">과거 레퍼런스 데이터 검색 프로세스</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">현재 프로세스의 문제점:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>SAP 환경에서 프로젝트 넘버링 검색 → 부서별 문서 접근</li>
+                                <li>문서 명칭 불일치로 인한 검색 어려움</li>
+                                <li>SAP 환경 자체의 속도 문제</li>
+                                <li>다운로드 후 스펙 비교 작업의 복잡성</li>
+                                <li>부서 간 구전 의존도가 높음</li>
+                            </ul>
+                            
+                            <div class="quote">
+                                "제가 회사를 그만뒀는데도 전화를 받은 적이 있어요. 그 직전에 하셨던 프로젝트 담당자시죠? 이러면서 그때 여기서 이런 것들이 기존 스펙이랑 다르게 적용이 됐는데..."
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">AI 적용 가능성 인사이트</div>
+                        <div>P&ID OCR을 통한 심볼 매칭 시스템 구축 가능. 표준화된 규칙 기반으로 비교/분석 자동화 가능하며, 사이즈별/국가별 차이를 드롭다운으로 반영 가능한 구조</div>
+                    </div>
+
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">부서간 보안 문제</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">보안 제약사항:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>부서별 문서 접근 권한 제한</li>
+                                <li>타 부서 문서 수정/삭제 위험 방지</li>
+                                <li>부서간 경쟁 구조로 인한 정보 보호</li>
+                                <li>메일 및 승인 과정의 지연</li>
+                            </ul>
+                            
+                            <div class="quote">
+                                "외부에서 볼 때는 한 팀이니까 서로 으쌰으쌰할 것 같죠. 근데 거기도 경쟁이에요."
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">솔루션 방향성</div>
+                        <div>승인 알람 시스템과 인수인계자 권한 관리를 통한 보안 규정 준수하면서도 효율성 확보 가능</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">Aspen HYSYS 시뮬레이션 관련</h2>
+                    
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">Q&A 사이트 및 포럼 활용</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">현재 지원 체계:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li><strong>KB Article 시스템:</strong> Knowledge Based Article 검색 기능</li>
+                                <li><strong>Case 분류:</strong> Urgent(4일), Important(7-14일), Minor(3주)</li>
+                                <li><strong>솔루션 컨설턴트:</strong> 현장 방문 지원</li>
+                            </ul>
+                            
+                            <div class="quote">
+                                "시스템 에러와 그 시스템 자체에 대한 이론적 로직은 완전 다른 얘기고 아스팬 포럼에 요청하는 건 전자가 강해요."
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">Local vs Global Optimal 판단 문제</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">최적화 기능 활용:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>HYSYS 내장 최적화 알고리즘 (5가지)</li>
+                                <li>Case Study 기능을 통한 다변수 분석</li>
+                                <li>제약사항 설정을 통한 현실적 최적화</li>
+                                <li>CAPEX/OPEX 밸런싱 고려</li>
+                            </ul>
+                            
+                            <div class="quote">
+                                "로컬 미니마나 글로벌 미니마를 찾는 가장 중요한 포인트는 어찌 됐든 첫 번째는 이니셜 포인트고 시작점이 어디냐에서 결정이 되는 거고 둘째는 제약사항이에요."
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">AI 적용 포텐셜</div>
+                        <div>비정형 텍스트에서 기본 세팅 추출 및 컴포넌트 선택 자동화 가능. PFD 자동 생성을 통한 1차 설계 효율화 기대</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="partnership" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">파트너십 구조 협의</h2>
+                    
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">6개월 협력 기간 제안</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">제안 배경:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>시제품 미완성 상태에서의 리스크 관리</li>
+                                <li>상호 호흡 맞춤 및 신뢰 구축 기간 필요</li>
+                                <li>업계 네트워크 POC 연결 가능성 검증</li>
+                                <li>기술 개발 진행도 확인</li>
+                            </ul>
+                            
+                            <div class="quote">
+                                "서로가 서로 리스크를 지게 되는 것 같아서 그 전에 6개월 정도 호흡을 맞춰보면서 대신에 고객 영업이 그 사이에 되거나 그 이후에 돼도 계약금의 일부를 바로 현금으로 드릴 수 있는..."
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">인센티브 구조</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">고객사 영업 성공 시:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>6개월 내 계약: 계약금의 10%</li>
+                                <li>6개월 후 계약: 계약금의 5%</li>
+                                <li>지분 논의는 6개월 후 별도 진행</li>
+                            </ul>
+                            
+                            <p><span class="highlight">iCORE 자금 활용:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>2,200만원 ~ 최대 3,000만원 지원 가능</li>
+                                <li>화공연구소 교육비로 활용</li>
+                                <li>실제 큐레이션 작업에 대한 대가</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">상호 리스크 분석</div>
+                        <div><strong>김상윤 대표:</strong> 업계 네트워크 POC 연결 신뢰도, 기술 개발 완성도 검증 필요<br>
+                        <strong>박규호 부장:</strong> 본업 병행 리소스 제약, 가정 상황 고려 필요</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">VC 스프린트 투자심의서 활용</h2>
+                    
+                    <div class="agenda-item">
+                        <h3 class="agenda-title">심의서 제출 계획</h3>
+                        <div class="agenda-content">
+                            <p><span class="highlight">활용 방안:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>서울대 벤처투자 VC 심사역 피드백 수령</li>
+                                <li>참가 VC들 간 아이템 공유 및 컨택 기회</li>
+                                <li>순위권 진입 시 최종 IR 발표 기회</li>
+                            </ul>
+                            
+                            <p><span class="highlight">기존 네트워크 활용:</span></p>
+                            <ul style="margin: 15px 0; padding-left: 20px; line-height: 1.8;">
+                                <li>서울대 기술지주 최현희 팀장 (포스코 IMP 심사위원)</li>
+                                <li>카이스트 청년창업투자지주 안준현 이사 (긴밀 소통)</li>
+                                <li>포스텍 홀딩스 정인호 팀장</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">전략적 가치</div>
+                        <div>기존 네트워크와의 연결점을 통한 신뢰도 제고 및 투자 유치 가능성 증대</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="decisions" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">주요 결정사항</h2>
+                    
+                    <div class="decision-item">
+                        <h3 style="color: #2e7d32; margin-bottom: 15px;">6개월 협력 기간 합의</h3>
+                        <p><strong>결정 내용:</strong> 지분 논의 전 6개월간 협력하며 상호 신뢰 구축</p>
+                        <p><strong>근거:</strong> 시제품 미완성 상태에서의 리스크 최소화 및 실질적 성과 검증</p>
+                        <p><strong>이행 방법:</strong> iCORE 자금을 통한 화공연구소 교육비 지급</p>
+                    </div>
+
+                    <div class="decision-item">
+                        <h3 style="color: #2e7d32; margin-bottom: 15px;">인센티브 구조 확정</h3>
+                        <p><strong>결정 내용:</strong> 고객사 영업 성공 시 계약금의 10%/5% 현금 지급</p>
+                        <p><strong>근거:</strong> 무급 노동 방지 및 동기 부여</p>
+                        <p><strong>조건:</strong> 수치는 향후 논의를 통해 조정 가능</p>
+                    </div>
+
+                    <div class="decision-item">
+                        <h3 style="color: #2e7d32; margin-bottom: 15px;">VC 스프린트 투자심의서 제출</h3>
+                        <p><strong>결정 내용:</strong> 박규호 부장의 VC 스프린트 과제로 해당 프로덕트 분석</p>
+                        <p><strong>근거:</strong> 기존 네트워크 활용한 신뢰도 제고</p>
+                        <p><strong>담당:</strong> 박규호 부장 (심상우 팀장 심사)</p>
+                    </div>
+
+                    <div class="decision-item">
+                        <h3 style="color: #2e7d32; margin-bottom: 15px;">협력 방식 및 역할 분담</h3>
+                        <p><strong>결정 내용:</strong> 빠른 마일스톤 설정 및 정기 미팅 진행</p>
+                        <p><strong>근거:</strong> "빠르게 시도하고 많이 실패하기" 철학 적용</p>
+                        <p><strong>방식:</strong> 30분-1시간 정기 미팅, 실질적 공동 개발 참여</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="actions" class="tab-content">
+                <div class="section">
+                    <h2 class="section-title">액션아이템</h2>
+                    
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">피칭덱 및 현재 상태 공유</h3>
+                            <p>현재 제품 개발 상태, 기술적 사항, 팀 구성 등 Latest Status 공유</p>
+                            <p><strong>담당자:</strong> 김상윤 대표</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority high">High</div>
+                            <div style="font-size: 0.9rem; color: #666;">즉시</div>
+                        </div>
+                    </div>
+
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">VC 스프린트 투자심의서 작성</h3>
+                            <p>해당 프로덕트 분석 및 투자심의서 제출, 러프하게라도 빠른 제출 우선</p>
+                            <p><strong>담당자:</strong> 박규호 부장</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority high">High</div>
+                            <div style="font-size: 0.9rem; color: #666;">1주 내</div>
+                        </div>
+                    </div>
+
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">화공연구소 교육 프로그램 기획</h3>
+                            <p>AI 개발진 대상 플랜트 사이클 교육 및 로직 개발을 위한 워크플로우 큐레이션</p>
+                            <p><strong>담당자:</strong> 박규호 부장</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority medium">Medium</div>
+                            <div style="font-size: 0.9rem; color: #666;">2주 내</div>
+                        </div>
+                    </div>
+
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">팀 구성 및 업무 방식 소개</h3>
+                            <p>조직 구조, 일하는 방식, 아카이빙 방법 등 협업을 위한 기본 정보 공유</p>
+                            <p><strong>담당자:</strong> 김상윤 대표</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority medium">Medium</div>
+                            <div style="font-size: 0.9rem; color: #666;">다음 미팅</div>
+                        </div>
+                    </div>
+
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">정기 미팅 스케줄 확정</h3>
+                            <p>30분-1시간 단위의 정기 미팅 일정 조율 및 마일스톤 설정</p>
+                            <p><strong>담당자:</strong> 양측 협의</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority medium">Medium</div>
+                            <div style="font-size: 0.9rem; color: #666;">3일 내</div>
+                        </div>
+                    </div>
+
+                    <div class="action-item">
+                        <div class="action-content">
+                            <h3 style="color: #c2185b; margin-bottom: 10px;">iCORE 자금 활용 계획 수립</h3>
+                            <p>교육비 산정 및 화공연구소 프로그램 비용 구조 확정</p>
+                            <p><strong>담당자:</strong> 양측 협의</p>
+                        </div>
+                        <div class="action-meta">
+                            <div class="priority low">Low</div>
+                            <div style="font-size: 0.9rem; color: #666;">1개월 내</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">후속 계획</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">1주차</div>
+                        <div>
+                            <p><strong>VC 스프린트 투자심의서 제출</strong></p>
+                            <p>현재 상태 공유 및 분석 자료 작성</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">2-4주차</div>
+                        <div>
+                            <p><strong>교육 프로그램 설계</strong></p>
+                            <p>AI 개발진 대상 플랜트 교육 및 로직 개발 지원</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">1-3개월</div>
+                        <div>
+                            <p><strong>초기 POC 개발</strong></p>
+                            <p>P&ID OCR 및 기본 기능 구현</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-date">6개월 후</div>
+                        <div>
+                            <p><strong>지분 및 장기 파트너십 논의</strong></p>
+                            <p>성과 검증 후 Co-founder 관계 공식화</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title collapsible" onclick="toggleCollapse(this)">핵심 인사이트 및 시사점</h2>
+                <div class="collapsible-content">
+                    
+                    <div class="insight-item">
+                        <div class="insight-title">🎯 기술적 실현 가능성</div>
+                        <div>P&ID의 표준화된 규칙과 OCR 기술 결합을 통한 자동화 가능성 확인. 특히 AspenTech과 같은 기존 솔루션과의 차별화된 접근 방식 도출</div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">💼 시장 진입 전략</div>
+                        <div>기존 네트워크(AspenTech, 건설사) 활용한 신뢰도 구축 및 VC 스프린트를 통한 투자자 네트워크 확장 전략 수립</div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">⚖️ 리스크 관리</div>
+                        <div>6개월 검증 기간 설정으로 상호 리스크 최소화하면서도 실질적 협력 관계 구축 가능한 구조 마련</div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">🚀 성장 가능성</div>
+                        <div>단순 도구 제공을 넘어 "시간 절약 → 실질적 공정 개발"로의 패러다임 전환을 통한 제조업 AI 선도 기업 가능성</div>
+                    </div>
+
+                    <div class="insight-item">
+                        <div class="insight-title">🔄 업무 프로세스 혁신</div>
+                        <div>구전 의존적 업무 방식에서 데이터 기반 의사결정 구조로의 전환을 통한 업계 전반의 디지털 혁신 주도</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title collapsible" onclick="toggleCollapse(this)">Mermaid 다이어그램</h2>
+                <div class="collapsible-content">
+                    
+                    <h3 style="margin: 20px 0 15px 0; color: #1e3c72;">파트너십 진행 플로우</h3>
+                    <div style="background: #f8faff; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+                        <div class="mermaid">
+                        graph TD
+                            A[초기 미팅] --> B[6개월 협력 기간]
+                            B --> C{성과 검증}
+                            C -->|성공| D[Co-founder 관계 공식화]
+                            C -->|보완 필요| E[협력 연장 또는 조정]
+                            B --> F[iCORE 자금 활용]
+                            F --> G[화공연구소 교육 프로그램]
+                            G --> H[AI 개발진 역량 강화]
+                            B --> I[VC 스프린트 참여]
+                            I --> J[투자자 네트워크 확장]
+                            H --> K[POC 개발]
+                            J --> K
+                            K --> C
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 20px 0 15px 0; color: #1e3c72;">기술 개발 로드맵</h3>
+                    <div style="background: #f8faff; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+                        <div class="mermaid">
+                        graph LR
+                            A[P&ID OCR 기술] --> B[심볼 매칭 시스템]
+                            B --> C[레퍼런스 DB 구축]
+                            C --> D[비교/분석 알고리즘]
+                            D --> E[자동화 도구]
+                            E --> F[통합 플랫폼]
+                            
+                            G[HYSYS 연동] --> H[시뮬레이션 최적화]
+                            H --> I[Case Study 자동화]
+                            I --> F
+                            
+                            J[워크플로우 분석] --> K[프로세스 표준화]
+                            K --> L[AI 학습 데이터]
+                            L --> F
+                        </div>
+                    </div>
+
+                    <h3 style="margin: 20px 0 15px 0; color: #1e3c72;">리스크-수익 매트릭스</h3>
+                    <div style="background: #f8faff; padding: 20px; border-radius: 12px;">
+                        <div class="mermaid">
+                        quadrantChart
+                            title 파트너십 리스크-수익 분석
+                            x-axis 낮은 리스크 --> 높은 리스크
+                            y-axis 낮은 수익 --> 높은 수익
+                            
+                            교육 프로그램: [0.2, 0.4]
+                            POC 개발: [0.5, 0.7]
+                            VC 네트워킹: [0.3, 0.8]
+                            Co-founder 관계: [0.8, 0.9]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="footer-note">
+                회의록 생성 일시: 2025년 7월 21일 | 
+                다음 미팅: 피칭덱 공유 후 일정 조율 | 
+                문의: 상호 메일을 통한 지속적 소통
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#2a5298',
+                primaryTextColor: '#1e3c72',
+                primaryBorderColor: '#1e3c72',
+                lineColor: '#2a5298',
+                secondaryColor: '#f8faff',
+                tertiaryColor: '#e8f1ff'
+            }
+        });
+
+        function showTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        function toggleCollapse(element) {
+            const content = element.nextElementSibling;
+            const isCollapsed = content.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                content.classList.remove('collapsed');
+                element.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                element.classList.add('collapsed');
+            }
+        }
+
+        // Add hover effects and animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
