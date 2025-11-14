@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>화공 플랜트 설계 LLM - 전체 워크플로우 & R&R & 코드맵</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-light: #111827;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56,189,248,0.2);
+      --accent-2: #22c55e;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --danger: #f97316;
+      --shadow-soft: 0 18px 45px rgba(15,23,42,0.65);
+      --radius-xl: 18px;
+      --radius-lg: 14px;
+      --radius-pill: 999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      background: linear-gradient(145deg, rgba(15,23,42,0.9), rgba(15,23,42,0.6));
+      border-radius: 24px;
+      padding: 20px 18px 22px;
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: var(--shadow-soft);
+      position: sticky;
+      top: 24px;
+      height: fit-content;
+      backdrop-filter: blur(18px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0, #38bdf8 0, #0ea5e9 40%, #0f172a 85%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 15px 35px rgba(56,189,248,0.55);
+    }
+
+    .logo-text-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #f9fafb;
+    }
+
+    .logo-text-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .sidebar-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.35);
+      color: var(--muted);
+      background: rgba(15,23,42,0.8);
+      cursor: default;
+      white-space: nowrap;
+    }
+
+    .pill.highlight {
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.3), rgba(15,23,42,0.9));
+    }
+
+    .toc {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(148,163,184,0.3);
+    }
+
+    .toc-group-title {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 10px 0 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .toc ul {
+      list-style: none;
+    }
+
+    .toc li {
+      margin-bottom: 5px;
+    }
+
+    .toc a {
+      display: block;
+      font-size: 12px;
+      color: #cbd5f5;
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+    }
+
+    .toc a:hover {
+      border-color: rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.9);
+      text-decoration: none;
+    }
+
+    .sidebar-note {
+      margin-top: 14px;
+      padding: 10px 10px 10px;
+      border-radius: 12px;
+      border: 1px dashed rgba(148,163,184,0.5);
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(15,23,42,0.85);
+    }
+
+    /* Main Area */
+    .main {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hero {
+      background: radial-gradient(circle at top left, rgba(56,189,248,0.24), rgba(15,23,42,0.96));
+      border-radius: 26px;
+      padding: 20px 22px 20px;
+      border: 1px solid rgba(148,163,184,0.4);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(56,189,248,0.22) 0, transparent 50%),
+        radial-gradient(circle at 90% 100%, rgba(34,197,94,0.16) 0, transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .hero-main {
+      max-width: 70%;
+      min-width: 260px;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero-badge {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(191, 219, 254, 0.8);
+      color: #dbeafe;
+      background: rgba(15,23,42,0.4);
+    }
+
+    .hero-subtitle {
+      margin-top: 8px;
+      color: #e5e7eb;
+      font-size: 13px;
+    }
+
+    .hero-tags {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.7);
+      border: 1px solid rgba(148,163,184,0.6);
+      color: var(--muted);
+    }
+
+    .hero-right {
+      min-width: 220px;
+      max-width: 280px;
+      background: rgba(15,23,42,0.92);
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.6);
+      padding: 10px 14px 12px;
+    }
+
+    .hero-right-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .hero-right-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 8px;
+      font-size: 11px;
+    }
+
+    .hero-right-grid strong {
+      display: block;
+      color: #e5e7eb;
+      font-size: 12px;
+    }
+
+    /* Timeline */
+    .section {
+      background: radial-gradient(circle at top, rgba(15,23,42,0.96), #020617);
+      border-radius: 24px;
+      padding: 18px 18px 18px;
+      border: 1px solid rgba(30,64,175,0.55);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--muted);
+    }
+
+    .section-desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 10px;
+      padding-left: 10px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(56,189,248,0.4), rgba(56,189,248,0.04));
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 14px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #38bdf8, #0ea5e9);
+      box-shadow: 0 0 0 5px rgba(56,189,248,0.18);
+    }
+
+    .timeline-card {
+      background: rgba(15,23,42,0.96);
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.4);
+      padding: 10px 12px;
+    }
+
+    .timeline-phase-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .timeline-phase-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .timeline-phase-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 10px;
+    }
+
+    .meta-tag {
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      color: var(--muted);
+    }
+
+    .meta-tag.core {
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: rgba(56,189,248,0.08);
+    }
+
+    .timeline-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.1fr 1.2fr;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .timeline-block-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #e5e7eb;
+      margin-bottom: 4px;
+    }
+
+    .timeline-block-list {
+      list-style: none;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .timeline-block-list li {
+      margin-bottom: 3px;
+      position: relative;
+      padding-left: 10px;
+    }
+
+    .timeline-block-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .code-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.95);
+      margin: 2px 2px 2px 0;
+      white-space: nowrap;
+    }
+
+    .code-chip span {
+      font-size: 9px;
+      opacity: 0.8;
+    }
+
+    .code-chip.core {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56,189,248,0.4);
+    }
+
+    .code-chip.safety {
+      border-color: var(--danger);
+    }
+
+    /* Discipline map */
+    .discipline-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .discipline-card {
+      background: rgba(15,23,42,0.98);
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.5);
+      padding: 8px 10px 8px;
+      font-size: 11px;
+    }
+
+    .discipline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    .discipline-title {
+      font-weight: 700;
+    }
+
+    .discipline-tagline {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .discipline-list {
+      margin-top: 3px;
+      list-style: none;
+      color: var(--muted);
+    }
+
+    .discipline-list li {
+      margin-bottom: 3px;
+    }
+
+    /* R&R table (condensed) */
+    .rr-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 11px;
+    }
+
+    .rr-table th,
+    .rr-table td {
+      border: 1px solid rgba(31,41,55,0.9);
+      padding: 4px 6px;
+      text-align: left;
+    }
+
+    .rr-table th {
+      background: rgba(15,23,42,1);
+      font-weight: 700;
+      color: #e5e7eb;
+    }
+
+    .rr-table td {
+      color: var(--muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 1080px) {
+      .page {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .sidebar {
+        position: static;
+        order: -1;
+      }
+      .hero-inner {
+        flex-direction: column;
+      }
+      .hero-main {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 840px) {
+      body {
+        padding: 14px;
+      }
+      .timeline-grid {
+        grid-template-columns: 1fr;
+      }
+      .discipline-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .discipline-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-title {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">⚙️</div>
+      <div>
+        <div class="logo-text-title">Plant LLM</div>
+        <div class="logo-text-sub">화공 플랜트 설계 · 운영 전주기 맵</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-title">Lifecycle</div>
+    <div class="pill-list">
+      <div class="pill highlight">기획·컨셉 (Pre-FEED)</div>
+      <div class="pill">기본설계 (FEED)</div>
+      <div class="pill">상세설계</div>
+      <div class="pill">구매·제작</div>
+      <div class="pill">시공</div>
+      <div class="pill">시운전·성능시험</div>
+      <div class="pill">운전·정비·FFS</div>
+    </div>
+
+    <div class="sidebar-section-title">Discipline</div>
+    <div class="pill-list">
+      <div class="pill">Process</div>
+      <div class="pill">Piping</div>
+      <div class="pill">Mechanical</div>
+      <div class="pill">Instrumentation</div>
+      <div class="pill">Safety / SIS</div>
+      <div class="pill">Operations</div>
+    </div>
+
+    <div class="toc">
+      <div class="toc-group-title">섹션 바로가기</div>
+      <ul>
+        <li><a href="#hero">개요 & 목표</a></li>
+        <li><a href="#timeline">Lifecycle 워크플로우</a></li>
+        <li><a href="#discipline-map">분야별 코드맵</a></li>
+        <li><a href="#rr">R&R 테이블</a></li>
+      </ul>
+
+      <div class="toc-group-title">핵심 코드 앵커</div>
+      <ul>
+        <li><a href="#timeline">ASME B31.3 / VIII / IX</a></li>
+        <li><a href="#timeline">API 520 / 521 / 650 / 610</a></li>
+        <li><a href="#discipline-map">API 554 / IEC 61511</a></li>
+        <li><a href="#discipline-map">ISO 10628 / ISA 5.1</a></li>
+        <li><a href="#timeline">CCPS Dynamic Simulation</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-note">
+      이 페이지는 <strong>Lead Process Engineer (Gas Technologies)</strong>의 Job Description을 기준으로,<br>
+      <strong>LLM이 알아야 할 전주기 설계·운영 기준</strong>을 시각화한 구조입니다.
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Hero -->
+    <section class="hero" id="hero">
+      <div class="hero-inner">
+        <div class="hero-main">
+          <div class="hero-title">
+            화공 플랜트 설계 특화 LLM
+            <span class="hero-badge">Workflow · R&amp;R · Codes Map</span>
+          </div>
+          <p class="hero-subtitle">
+            기획 &rarr; FEED &rarr; 상세설계 &rarr; 구매·제작 &rarr; 시공 &rarr; 시운전 &rarr; 운전/정비까지.<br/>
+            각 단계에서 <strong>어떤 R&amp;R</strong>이 수행되고, 어떤 <strong>국제 코드·표준</strong>을 따라야 하는지 한눈에 정리한
+            <strong>LLM 학습용 설계 지도</strong>입니다.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag">⚙️ Lead Process Engineer · Gas Technologies</span>
+            <span class="hero-tag">📐 PFD / P&amp;ID / MSD / Line Sizing</span>
+            <span class="hero-tag">🚀 Dynamic Simulation · Commissioning</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-right-title">LLM의 핵심 목표</div>
+          <div class="hero-right-grid">
+            <div>
+              <strong>1. 휴먼 에러 감소</strong>
+              PFD/P&amp;ID, PSV sizing, Line sizing, Safety Logic에서
+              <strong>코드 위반·누락 자동 검출</strong>.
+            </div>
+            <div>
+              <strong>2. 공수 최적화</strong>
+              제안~시운전까지 반복 업무를
+              <strong>규격 기반 템플릿 &amp; 자동 생성</strong>으로 전환.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="section" id="timeline">
+      <div class="section-header">
+        <div class="section-title">
+          전체 라이프사이클 워크플로우
+          <span class="section-pill">기획 → 설계 → 건설 → 시운전 → 운전</span>
+        </div>
+        <div class="section-desc">
+          각 단계별 <strong>핵심 R&amp;R</strong>과 이를 지탱하는 <strong>대표 코드/표준</strong>을 연결한 타임라인입니다.
+        </div>
+      </div>
+
+      <div class="timeline">
+        <!-- Phase 1 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 1. 비즈니스 기획 · 컨셉 설계 (Pre-FEED)</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag core">Lead Process 중심</span>
+                <span class="meta-tag">Proposal / RFQ 대응</span>
+                <span class="meta-tag">Concept Selection</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>RFQ/Client Spec 분석, 기술 요구사항 정리</li>
+                  <li>Gas treating / Dehydration / Compression 등 기술 선택</li>
+                  <li>초기 Heat &amp; Mass Balance, 블록 PFD, UFD 작성</li>
+                  <li>개략 라인·장비 사이징 (탱크, HX, 펌프, 압축기)</li>
+                  <li>제안용 공정 패키지, Technical Proposal 작성</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">API 520 / 521 <span>PSV &amp; Depressuring</span></div>
+                <div class="code-chip">ASME B31.3 <span>Process Piping 기본</span></div>
+                <div class="code-chip">ASME Sec VIII Div.1 <span>압력용기 개략 설계</span></div>
+                <div class="code-chip">API 650 / 620 <span>저장탱크 개념 설계</span></div>
+                <div class="code-chip">ISO 10628 <span>PFD/UFD 도면 규칙</span></div>
+                <div class="code-chip">CCPS Hazard Eval<span>위험성 시나리오 개략</span></div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>RFQ 텍스트 입력 → 요구 사양 및 코드 의무사항 자동 추출</li>
+                  <li>Gas process 선택 옵션 제시 (기술/Capex/Opex 비교 표)</li>
+                  <li>API 521 Fire case 가정 기반 대략적 flare load 산정</li>
+                  <li>ISO 10628 심볼로 표현된 블록 PFD 자동 생성</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 2. 기본설계 / FEED</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag core">Process 주도</span>
+                <span class="meta-tag">PFD/UFD/MSD/Line List</span>
+                <span class="meta-tag">초기 P&amp;ID · HAZID</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>상세 Heat &amp; Mass Balance 확정 (HYSYS 등 활용)</li>
+                  <li>PFD, UFD, MSD, Line sizing, Line list 작성</li>
+                  <li>주요 장비(탱크, 컬럼, HX, 펌프, 압축기) Process Datasheet</li>
+                  <li>P&amp;ID 초안, Control &amp; Safety Philosophy, Cause &amp; Effect 초안</li>
+                  <li>HAZID / Pre-HAZOP, SIL 후보 식별</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">ASME B31.3 <span>배관 설계 전 범위</span></div>
+                <div class="code-chip">ASME Sec VIII / Sec II <span>압력용기 설계/재질</span></div>
+                <div class="code-chip">ASME B16.5/9/10/34 <span>플랜지·피팅·밸브</span></div>
+                <div class="code-chip safety">API 520 / 521 <span>PSV 사이징·Depressuring</span></div>
+                <div class="code-chip safety">API 14C / 14E <span>Offshore Safety &amp; Piping</span></div>
+                <div class="code-chip">IP 15 / IEC 60079-10-1 <span>Area classification</span></div>
+                <div class="code-chip">ISO 10628 + ISA 5.1 <span>PFD/P&amp;ID·계장 심볼</span></div>
+                <div class="code-chip">API 554 Part 1 <span>Control System 개념/기능</span></div>
+                <div class="code-chip">IEC 61511 (개략) <span>SIS Lifecyle 프레임</span></div>
+                <div class="code-chip">PIP PNPIP001 / NORSOK L-001 <span>라인 클래스 보완</span></div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>프로세스 스펙 → API/ASME 기반 Line size &amp; velocity 체크</li>
+                  <li>PFD/P&amp;ID 구성 시 ISO 10628/ISA 5.1 위배 요소 자동 플래그</li>
+                  <li>PSV 후보 위치와 API 521 시나리오(피크 케이스/블로다운) 추천</li>
+                  <li>IEC 61511 기준으로 SIF 후보 및 SIL 타겟 초안 리스트업</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 3. 상세설계 (Detail Engineering)</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag core">Multi-Discipline 협업</span>
+                <span class="meta-tag">최종 P&amp;ID · C&amp;E · Dynamic Sim</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>최종 P&amp;ID, Line list, Equipment list, Instrument index 확정</li>
+                  <li>Control &amp; Safety Philosophy, Cause &amp; Effect 최종화</li>
+                  <li>Dynamic Simulation (Start-up/Trip/ESD/Depressuring)</li>
+                  <li>Vendor 도면/데이터시트 기술 검토 (API/ASME 준수 확인)</li>
+                  <li>3D Model Review (Nozzle orientation, 접근/정비성)</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">ASME B31.3 / Sec VIII / Sec IX</div>
+                <div class="code-chip">API 610 / 617 / 661 / 682 <span>Rotating &amp; HX</span></div>
+                <div class="code-chip">API 650 / 620 / 2000 <span>탱크 &amp; Venting</span></div>
+                <div class="code-chip safety">API 520 / 521 <span>PSV·Flare 상세 케이스</span></div>
+                <div class="code-chip safety">IEC 61511 / IEC 61508 <span>SIS &amp; SIL 상세</span></div>
+                <div class="code-chip">API 554 Part 2–3 <span>PCS 설치·운영</span></div>
+                <div class="code-chip">ISO 10628 + ISA 5.1 / 18.2 <span>P&amp;ID·알람관리</span></div>
+                <div class="code-chip safety">CCPS Dynamic Simulation <span>안전·운전성 분석</span></div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>P&amp;ID 입력 시 코드 기반 체크리스트 자동 생성<br/>– PSV 위치/설정 누락, Double block &amp; bleed, Bypass 로직 등</li>
+                  <li>Cause &amp; Effect 초안 → IEC 61511 기반 형식 검증</li>
+                  <li>Dynamic Sim 결과(압력·온도·레벨 트렌드) 해석 및 CCPS 가이드와 비교</li>
+                  <li>Vendor 자료(API 610/661 등)와 Project Spec 간 갭 분석 요약</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 4. 구매 · 제작 (Procurement · Fabrication)</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag">Vendor 기술 검토</span>
+                <span class="meta-tag">WPS/PQR · 재질 인증</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>장비·계장 Process Datasheet 발행</li>
+                  <li>Vendor 제안서 기술 검토 및 코드 준수 체크</li>
+                  <li>재질 사양(ASME Sec II, ASTM) 검토</li>
+                  <li>WPS/PQR, Welder Qualification 검토 (ASME IX)</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">ASME Sec II <span>재질 사양</span></div>
+                <div class="code-chip core">ASME Sec IX <span>용접 절차/Welder</span></div>
+                <div class="code-chip">ASTM / EN / ISO 재료 규격</div>
+                <div class="code-chip">API 610 / 617 / 661 / 675 / 676</div>
+                <div class="code-chip">API 650 / 620 / 2000</div>
+                <div class="code-chip">ISO 9001 / 14001 / 45001 (QHSE 시스템)</div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>Vendor 데이터시트 → Project Spec &amp; API/ASME 코드와 비교한 Gap Report 자동 생성</li>
+                  <li>WPS/PQR 문서에서 ASME IX 필수 항목 충족 여부 체크리스트 자동화</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 5 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 5. 시공 / 설치 (Construction &amp; Erection)</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag">Site Query / Field Change</span>
+                <span class="meta-tag">Hydrotest / NDT</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>배관 Prefab/현장 설치, 용접, NDT, Hydrotest</li>
+                  <li>장비 설치, Nozzle orientation 및 접근성 확인</li>
+                  <li>Site TQ/Field Change에 대한 공정·안전 영향 검토</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">ASME B31.3 <span>현장 용접·시험</span></div>
+                <div class="code-chip">ASME Sec IX <span>현장 용접 절차 준수</span></div>
+                <div class="code-chip">API 570 / 510 <span>시공 후 검사 규정</span></div>
+                <div class="code-chip">국가/지역 건설·소방·전기 규정</div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>현장 TQ 내용 입력 → B31.3/ASME VIII 관점에서 영향 및 허용 여부 코멘트 생성</li>
+                  <li>Hydrotest 범위 및 압력 계산을 B31.3 규정 기반으로 자동 제시</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 6 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 6. Pre-commissioning / Commissioning / Start-up</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag core">Dynamic Sim·C&amp;E 검증</span>
+                <span class="meta-tag">Start-up &amp; Performance Test</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>Loop check, Function test, Cause &amp; Effect verification</li>
+                  <li>Cold/Hot commissioning, Start-up 절차 실행</li>
+                  <li>성능 보증 시험 및 데이터 분석</li>
+                  <li>운전원 교육, OTS 및 Dynamic Simulator 활용</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip core">API 554 <span>PCS 설치·커미셔닝 Best Practice</span></div>
+                <div class="code-chip safety">IEC 61511 <span>SIF 검증·Proof Test</span></div>
+                <div class="code-chip safety">CCPS Dynamic Simulation <span>Trip/ESD/Start-up 분석</span></div>
+                <div class="code-chip">ISO 10628 / ISA 5.1 <span>As-built P&amp;ID</span></div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>Start-up 절차 초안 생성 (중요 Interlock·Alarm를 API 554/IEC 61511 기준으로 강조)</li>
+                  <li>Dynamic Sim 결과(압력/온도/플레어 부하 변동)에 대한 CCPS 가이드 기반 해석 리포트 생성</li>
+                  <li>C&amp;E 매트릭스에서 테스트 누락된 시나리오 자동 검출</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 7 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-card">
+            <div class="timeline-phase-header">
+              <div class="timeline-phase-title">Phase 7. 인도 · 운전 · 정비 · FFS (O&amp;M)</div>
+              <div class="timeline-phase-meta">
+                <span class="meta-tag">O&amp;M Manual · As-built</span>
+                <span class="meta-tag">De-bottlenecking · FFS</span>
+              </div>
+            </div>
+            <div class="timeline-grid">
+              <div>
+                <div class="timeline-block-title">주요 R&amp;R</div>
+                <ul class="timeline-block-list">
+                  <li>As-built PFD/P&amp;ID, Line list, Instrument index 인도</li>
+                  <li>Operation / Installation / Maintenance Manual 작성</li>
+                  <li>De-bottlenecking, MOC, 확장 검토</li>
+                  <li>FFS(Fitness-for-Service) 평가 및 장기 신뢰성 분석</li>
+                </ul>
+              </div>
+              <div>
+                <div class="timeline-block-title">설계 기준 · 코드</div>
+                <div class="code-chip safety">API 579 <span>Fitness-for-Service</span></div>
+                <div class="code-chip">API 510 / 570 <span>In-service Inspection</span></div>
+                <div class="code-chip">CCPS RBI / PSM 가이드</div>
+                <div class="code-chip">ISO 10628 / ISA 5.1 <span>As-built 도면 유지</span></div>
+              </div>
+              <div>
+                <div class="timeline-block-title">LLM 자동화 예시</div>
+                <ul class="timeline-block-list">
+                  <li>운전 데이터 + 손상 정보 입력 → API 579 Level 1/2 적용 가능 여부 제안</li>
+                  <li>MOC 요청 내용에 따른 공정/안전/코드 영향 요약</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Discipline Map -->
+    <section class="section" id="discipline-map">
+      <div class="section-header">
+        <div class="section-title">
+          분야별 코드·표준 맵
+          <span class="section-pill">Process · Piping · Mech · I&amp;C · Safety</span>
+        </div>
+        <div class="section-desc">
+          LLM이 <strong>“Phase + Discipline + Code”</strong> 조합으로 추론하기 위한 앵커 코드들을 정리한 요약입니다.
+        </div>
+      </div>
+
+      <div class="discipline-grid">
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Process / Safety</div>
+            <div class="discipline-tagline">H&amp;MB, PFD, PSV/Flare, Dynamic Sim</div>
+          </div>
+          <ul class="discipline-list">
+            <li><strong>API 520 / 521</strong> – PSV &amp; Depressuring, Flare load</li>
+            <li><strong>API 14C / 14E</strong> – Offshore 안전·배관</li>
+            <li><strong>API 650 / 620 / 2000</strong> – 탱크 &amp; Venting</li>
+            <li><strong>ISO 10628</strong> – PFD/P&amp;ID 표기</li>
+            <li><strong>CCPS Dynamic Simulation</strong> – Upset/Trip/ESD 분석</li>
+            <li><strong>CCPS HAZOP / LOPA / RBI</strong> – 위험성 평가</li>
+          </ul>
+        </div>
+
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Piping</div>
+            <div class="discipline-tagline">라인 사이징, Class, Layout</div>
+          </div>
+          <ul class="discipline-list">
+            <li><strong>ASME B31.3</strong> – 공정 배관 핵심 코드</li>
+            <li><strong>ASME B16.x</strong> – 플랜지/피팅/밸브 치수</li>
+            <li><strong>ASME Sec II</strong>, <strong>ASTM</strong> – 재질 규격</li>
+            <li><strong>PIP PNPIP001</strong>, Piping Practices</li>
+            <li><strong>NORSOK L-001</strong> – Material selection</li>
+          </ul>
+        </div>
+
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Mechanical</div>
+            <div class="discipline-tagline">Vessel, Rotating, Tank</div>
+          </div>
+          <ul class="discipline-list">
+            <li><strong>ASME Sec VIII</strong> – 압력용기 설계</li>
+            <li><strong>ASME Sec IX</strong> – 용접 절차/Welder Qualification</li>
+            <li><strong>API 610 / 617 / 682 / 661</strong> – Pump/Compressor/HX</li>
+            <li><strong>API 650 / 620</strong> – 저장탱크</li>
+            <li><strong>API 579</strong> – Fitness-for-Service</li>
+          </ul>
+        </div>
+
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Instrumentation &amp; Control</div>
+            <div class="discipline-tagline">PCS, DCS, Interlock, Alarm</div>
+          </div>
+          <ul class="discipline-list">
+            <li><strong>API 554 (RP 554)</strong> – Process Control Systems 전 라이프사이클</li>
+            <li><strong>IEC 61511 / IEC 61508</strong> – SIS &amp; SIL</li>
+            <li><strong>ISA 5.1</strong> – 계장 심볼·Tagging</li>
+            <li><strong>ISA 18.2</strong> – 알람 관리</li>
+            <li><strong>IEC 60079-10-1</strong> / <strong>IP 15</strong> – Hazardous area</li>
+          </ul>
+        </div>
+
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Operations &amp; Maintenance</div>
+            <div class="discipline-tagline">PSM, RBI, Long-term Integrity</div>
+          </div>
+          <ul class="discipline-list">
+            <li><strong>API 510 / 570</strong> – 압력용기/배관 검사</li>
+            <li><strong>API 579</strong> – FFS · Remaining Life</li>
+            <li><strong>CCPS PSM / RBI</strong> – 운영 안전관리</li>
+            <li><strong>ISO 9001 / 14001 / 45001</strong> – 경영·환경·안전 시스템</li>
+          </ul>
+        </div>
+
+        <div class="discipline-card">
+          <div class="discipline-header">
+            <div class="discipline-title">Region Overlay</div>
+            <div class="discipline-tagline">국가별 추가 규정</div>
+          </div>
+          <ul class="discipline-list">
+            <li>인도: <strong>OISD, IS 5572, SMPV, Petroleum Rules</strong></li>
+            <li>EU: <strong>PED, ATEX</strong></li>
+            <li>미국: <strong>OSHA PSM, NFPA, NEC</strong></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- R&R Table -->
+    <section class="section" id="rr">
+      <div class="section-header">
+        <div class="section-title">
+          Lead Process Engineer R&amp;R vs Phase vs Codes
+          <span class="section-pill">Job Description 매핑</span>
+        </div>
+        <div class="section-desc">
+          JD에 나와 있는 <strong>Lead Process Engineer (Gas Technologies)</strong>의 역할을<br/>
+          각 Phase 및 대표 코드와 함께 한눈에 요약한 테이블입니다.
+        </div>
+      </div>
+
+      <table class="rr-table">
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>핵심 R&amp;R</th>
+            <th>주요 코드/표준 앵커</th>
+            <th>LLM 활용 포인트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pre-FEED / Proposal</td>
+            <td>RFQ 분석, 기술 컨셉 선정, H&amp;MB·블록 PFD/UFD, 제안서 작성</td>
+            <td>API 520/521, ASME B31.3, ASME VIII, API 650, ISO 10628, CCPS Hazard Eval</td>
+            <td>RFQ → 요구 코드·사양 추출, 개략 PFD·Flare load 자동 생성</td>
+          </tr>
+          <tr>
+            <td>FEED</td>
+            <td>PFD/UFD/MSD, Line sizing, PSV sizing, P&amp;ID 초안, Control/Safety Philosophy, HAZID/Pre-HAZOP</td>
+            <td>ASME B31.3, ASME VIII/II, ASME B16.x, API 520/521, API 14C/14E, IP 15/IEC 60079-10-1, ISO 10628, API 554, IEC 61511 (개략)</td>
+            <td>P&amp;ID 초안 검토, API/ASME 위배 요소 플래그, SIL 후보·PSV 배치 추천</td>
+          </tr>
+          <tr>
+            <td>Detail Engineering</td>
+            <td>최종 P&amp;ID, Line list, Instrument index, Cause &amp; Effect, Dynamic Sim, Vendor 자료 검토</td>
+            <td>ASME B31.3, ASME VIII/IX, API 610/617/661/682, API 650/620/2000, IEC 61511/61508, API 554, ISO 10628, ISA 5.1/18.2, CCPS Dynamic Simulation</td>
+            <td>코드 기반 P&amp;ID·C&amp;E 검증, Dynamic 시나리오 평가, Vendor Spec vs Code 갭 보고서</td>
+          </tr>
+          <tr>
+            <td>Procurement / Fabrication</td>
+            <td>Process Datasheet 발행, Vendor 기술 검토, 재질·용접 절차 승인</td>
+            <td>ASME Sec II, Sec IX, ASTM/EN/ISO 재료, API 610/617/661, API 650/620, ISO 9001 등</td>
+            <td>Vendor 문서를 코드 기준 체크리스트로 자동 검토</td>
+          </tr>
+          <tr>
+            <td>Construction</td>
+            <td>시공 관련 TQ 응답, 현장 변경 영향 검토</td>
+            <td>ASME B31.3, ASME IX, API 510/570, 지역 건설·소방 규정</td>
+            <td>Site Query에 대한 코드·안전 관점 코멘트 생성</td>
+          </tr>
+          <tr>
+            <td>Commissioning / Start-up</td>
+            <td>C&amp;E 테스트, Start-up/Shutdown/Trip 시나리오 정의, Performance Test</td>
+            <td>API 554, IEC 61511, CCPS Dynamic Simulation, ISO 10628/ISA 5.1</td>
+            <td>Start-up 절차 자동 작성, Dynamic 결과 해석, 누락 시나리오 탐지</td>
+          </tr>
+          <tr>
+            <td>O&amp;M / FFS</td>
+            <td>운전 지원, MOC, De-bottlenecking, FFS 평가 지원</td>
+            <td>API 579, API 510/570, CCPS RBI/PSM, ISO 10628</td>
+            <td>운전 데이터 기반 FFS 수준 제안, MOC 영향 분석</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+</body>
+</html>
